@@ -107,6 +107,7 @@
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
+
     var duplicateFreeArray = [];
     for (var i = 0; i < array.length; i++){
       if(!duplicateFreeArray.includes(array[i])){
@@ -226,7 +227,7 @@
         return false;
       }
       if (typeof iterator === 'function') {
-        if (iterator(item)) {
+        if (iterator(item)) {//identy of item or test of item
           return true;
         } else {
           return false;
@@ -245,8 +246,8 @@
     if (iterator === undefined){
       iterator = _.identity;
     }
-    return _.every(collection, function(item){
-      if (!iterator(item)){
+    return !_.every(collection, function(item){
+      if (iterator(item)){
         return false;
       }else{
         return true;
@@ -274,11 +275,28 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    for (var i = 1; i < arguments.length; i++){//loop through arguments[1]
+      for (var key in arguments[i]){
+        obj[key] = arguments[i][key];
+      }
+
+    }
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    for (var i = 1; i < arguments.length; i++){//loop through arguments[1]
+      for (var key in arguments[i]){
+        if(obj[key] === undefined){
+          obj[key] = arguments[i][key];
+        }
+
+      }
+
+    }
+    return obj;
   };
 
 
@@ -322,6 +340,23 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+
+    var argumentsPrevious = [];
+    var results = [];
+
+    return function(){
+      if(!argumentsPrevious.includes(JSON.stringify(arguments))){
+        var result = func.apply(this, arguments)
+        argumentsPrevious.push(JSON.stringify(arguments));
+        results.push(result);
+        return result;
+
+      }else{
+        return results[argumentsPrevious.indexOf(JSON.stringify(arguments))];
+      }
+
+
+    }
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -331,6 +366,12 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    var concernedArgsArray = Array.prototype.slice.call(arguments);
+    var concernedArgs = concernedArgsArray.slice(2, arguments.length)
+
+    setTimeout(function(){
+      func.apply(null, concernedArgs);
+    }, wait);
   };
 
 

@@ -149,7 +149,7 @@
       it('should fail for a set containing no matching values', function() {
         // Replace this line with an `expect` statement that tests
         // the behavior described by the `it` string
-        expect(_.some([null, 0, false], _.identity)).to.be.true;
+        expect(_.some([null, 0, false], _.identity)).to.be.false;
       });
 
       it('should pass for a collection containing one matching value', function() {
@@ -187,9 +187,11 @@
       });
 
       it('should override properties found on the destination', function() {
-        // Replace this line with an `expect` statement that tests
-        // the behavior described by the `it` string
-        throw new Error('This test is missing.');
+        var destination = {'key': 'value'};// Replace this line with an `expect` statement that tests
+        var source = {'key': 'newValue'}// the behavior described by the `it` string
+        var extended = _.extend(destination, source);
+        expect(extended.key).to.equal('newValue');
+        //throw new Error('This test is missing.');
       });
 
       it('should not override properties not found in the source', function() {
@@ -265,9 +267,11 @@
       });
 
       it('should copy any property whose key is not already set on the target', function() {
-        // Replace this line with an `expect` statement that tests
-        // the behavior described by the `it` string
-        throw new Error('This test is missing.');
+        var destination = {'key': 'value'};// Replace this line with an `expect` statement that tests
+        var source = {'newKey': 'newValue'};// the behavior described by the `it` string
+        var expected = _.defaults(destination, source);
+        expect(expected.newKey).to.equal('newValue');
+        //throw new Error('This test is missing.');
       });
 
       it('should not copy a property if that key is already set on the target', function() {

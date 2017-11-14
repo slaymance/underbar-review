@@ -233,7 +233,7 @@
 
     return function () {
       if (!alreadyCalled) {
-        result = this.func(this, arguments);
+        result = func.apply(this, arguments);
         alreadyCalled = true;
       }
       return result;

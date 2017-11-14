@@ -6,7 +6,7 @@
   // Returns whatever value is passed as the argument. This function doesn't
   // seem very useful, but remember it--if a function needs to provide an
   // iterator when the user does not pass one in, this will be handy.
-  _.identity = (val) => val;
+  _.identity = val => val;
 
   /**
    * COLLECTIONS
@@ -34,7 +34,7 @@
 
   // Like first, but for the last elements. If n is undefined, return just the
   // last element.
-  
+
   _.last = (array, n) => n === undefined
     ? array[array.length - 1]
     : array.slice(n <= array.length ? array.length - n : 0, array.length);
@@ -83,7 +83,7 @@
   };
 
   // Return all elements of an array that don't pass a truth test.
-  _.reject = (collection, test) => _.filter(collection, (item) => !test(item)); 
+  _.reject = (collection, test) => _.filter(collection, (item) => !test(item));
   // TIP: see if you can re-use _.filter() here, without simply
   // copying code in and modifying it
 
@@ -141,38 +141,7 @@
   //     return total + number * number;
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
-  // _.reduce = function(collection, iterator, accumulator) {
-  // 
-  //   if(Array.isArray(collection)){//if collection is array
-  //     if(accumulator === undefined){//if accumulator missing
-  //       var accumulator = collection[0];
-  //       for (var i = 1; i < collection.length; i++){
-  //         accumulator = iterator(accumulator, collection[i]);
-  //       }
-  //     }else{//accumulator provided
-  //       for (var i = 0; i < collection.length; i++){
-  //         accumulator = iterator(accumulator, collection[i]);
-  //       }
-  //     }
-  //   }else{// if collection is object
-  //     if(accumulator === undefined){
-  //       var accumulator = collection[Object.keys(collection)[0]];
-  //       for (var key in collection){
-  //         if(key !== Object.keys(collection)[0]){
-  //           accumulator = iterator(accumulator, collection[key]);
-  //         }
-  //       }
-  //     }else{
-  //       for (var key in collection){
-  //         accumulator = iterator(accumulator, collection[key]);
-  //       }
-  //     }
-  //   }
-  // 
-  //     return accumulator;
-  // 
-  // };
-  
+
   _.reduce = (collection, iterator, accumulator) => {
     let firstCall = true;
     _.each(collection, item => {
@@ -182,57 +151,27 @@
     });
     return accumulator;
   };
-  
+
   // _.reduce = (collection, iterator, accumulator) => {}
 
   // Determine if the array or object contains a given value (using `===`).
-  _.contains = function(collection, target) {
-    // TIP: Many iteration problems can be most easily expressed in
-    // terms of reduce(). Here's a freebie to demonstrate!
-    return _.reduce(collection, function(wasFound, item) {
-      if (wasFound) {
-        return true;
-      }
-      return item === target;
-    }, false);
-  };
+  _.contains = (collection, target) => _.reduce(collection, (wasFound, item) =>
+    wasFound ? true : item === target, false);
+  // TIP: Many iteration problems can be most easily expressed in
+  // terms of reduce(). Here's a freebie to demonstrate!
 
 
   // Determine whether all of the elements match a truth test.
-  _.every = function(collection, iterator) {
-    // TIP: Try re-using reduce() here.
-    return _.reduce(collection, function(passesTest, item) {
-      if (!passesTest) {
-        return false;
-      }
-      if (typeof iterator === 'function') {
-        if (iterator(item)) {//identy of item or test of item
-          return true;
-        } else {
-          return false;
-        }
-      } else {
-        return item === true ? true : false;
-      }
-    }, true);
-  };
+  _.every = (collection, iterator) =>
+    _.reduce(collection, (passesTest, item) => !passesTest ?
+      false : typeof iterator === 'function' ? !!iterator(item) : !!item, true);
+  // TIP: Try re-using reduce() here.
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
-  _.some = function(collection, iterator) {
-    // TIP: There's a very clever way to re-use every() here.
-    //debugger;
-    if (iterator === undefined){
-      iterator = _.identity;
-    }
-    return !_.every(collection, function(item){
-      if (iterator(item)){
-        return false;
-      }else{
-        return true;
-      }
-    });
-  };
+  //   // TIP: There's a very clever way to re-use every() here.
+  _.some = (collection, iterator) => !_.every(collection, item =>
+    iterator ? !iterator(item) : !_.identity(item));
 
 
   /**
@@ -253,28 +192,27 @@
   //   }, {
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
-  _.extend = function(obj) {
-    for (var i = 1; i < arguments.length; i++){//loop through arguments[1]
-      for (var key in arguments[i]){
-        obj[key] = arguments[i][key];
-      }
-
-    }
+  // _.extend = function(obj) {
+  //   for (var i = 1; i < arguments.length; i++){//loop through arguments[1]
+  //     for (var key in arguments[i]){
+  //       obj[key] = arguments[i][key];
+  //     }
+  //
+  //   }
+  //   return obj;
+  // };
+  _.extend = (obj, ...decorators) => {
+    _.each(decorators, decorator =>
+      _.each(decorator, (value, key) => obj[key] = value));
     return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
-  _.defaults = function(obj) {
-    for (var i = 1; i < arguments.length; i++){//loop through arguments[1]
-      for (var key in arguments[i]){
-        if(obj[key] === undefined){
-          obj[key] = arguments[i][key];
-        }
 
-      }
-
-    }
+  _.defaults = (obj, ...decorators) => {
+    _.each(decorators, decorator => _.each(decorator, (value, key) =>
+      obj[key] === undefined ? obj[key] = value : null));
     return obj;
   };
 
@@ -289,26 +227,25 @@
 
   // Return a function that can be called at most one time. Subsequent calls
   // should return the previously returned value.
-  _.once = function(func) {
-    // TIP: These variables are stored in a "closure scope" (worth researching),
-    // so that they'll remain available to the newly-generated function every
-    // time it's called.
-    var alreadyCalled = false;
-    var result;
+  _.once = (func) => {
+    let alreadyCalled = false;
+    let result;
 
-    // TIP: We'll return a new function that delegates to the old one, but only
-    // if it hasn't been called before.
-    return function() {
+    return function () {
       if (!alreadyCalled) {
-        // TIP: .apply(this, arguments) is the standard way to pass on all of the
-        // infromation from one function call to another.
-        result = func.apply(this, arguments);
+        result = this.func(this, arguments);
         alreadyCalled = true;
       }
-      // The new function always returns the originally computed result.
       return result;
     };
   };
+  // TIP: These variables are stored in a "closure scope" (worth researching),
+  // so that they'll remain available to the newly-generated function every
+  // time it's called.
+  // TIP: We'll return a new function that delegates to the old one, but only
+  // if it hasn't been called before.
+  // TIP: .apply(this, arguments) is the standard way to pass on all of the
+  // infromation from one function call to another.
 
   // Memorize an expensive function's results by storing them. You may assume
   // that the function only takes primitives as arguments.

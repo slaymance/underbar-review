@@ -260,19 +260,15 @@
     var argumentsPrevious = [];
     var results = [];
 
-    return function(){
-      if(!argumentsPrevious.includes(JSON.stringify(arguments))){
-        var result = func.apply(this, arguments)
+    return function() {
+      if (!argumentsPrevious.includes(JSON.stringify(arguments))) {
+        var result = func.apply(this, arguments);
         argumentsPrevious.push(JSON.stringify(arguments));
         results.push(result);
         return result;
-
-      }else{
-        return results[argumentsPrevious.indexOf(JSON.stringify(arguments))];
       }
-
-
-    }
+      return results[argumentsPrevious.indexOf(JSON.stringify(arguments))];
+    };
   };
 
   // Delays a function for the given number of milliseconds, and then calls
